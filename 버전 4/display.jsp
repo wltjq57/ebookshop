@@ -1,0 +1,78 @@
+<%@ page import="java.sql.*" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<% request.setCharacterEncoding("UTF-8"); %>
+<% 
+int level = (Integer)session.getAttribute("level");
+String loginId 	= (String)session.getAttribute("id");
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>게시글 표시</title>
+</head>
+<body>
+<h3>게시글 내용</h3>
+<%
+	String subject="", memo="", name="", time="", email="";
+	int id = Integer.parseInt(request.getParameter("id"));
+
+	Connection con=null;
+	Statement stmt=null;
+	try {
+		Class.forName("org.mariadb.jdbc.Driver");
+		String url = "jdbc:mysql://localhost:3306/board";
+		con = DriverManager.getConnection(url, "root", "1234");	
+	}
+	catch(Exception e) {
+		out.println("데이터베이스 접속에 문제가 있습니다.<hr>");
+		out.println(e.getMessage());
+		e.printStackTrace();
+	}
+	stmt = con.createStatement();
+	String sql = "select * from message where id = " + id;
+	ResultSet rs = stmt.executeQuery(sql);
+	
+	while(rs.next()) {
+		subject = rs.getString("subject");
+		name = rs.getString("name");
+		memo = rs.getString("memo");
+		time = rs.getString("time");
+		email = rs.getString("email");
+	}
+%>
+<table border="2">
+<tr>
+	<td>제목</td>
+	<td><%= subject %></td>
+</tr>
+
+<tr>
+	<td>작성자</td>
+	<td><%= name %></td>
+</tr>
+
+<tr>
+	<td>내용</td>
+	<td><%= memo %></td>
+</tr>
+
+<tr>
+</tr>
+
+<tr>
+	<td>작성날짜</td>
+	<td><%= time %></td>
+</tr>
+
+<tr>
+	<td>이메일</td>
+	<td><%= name %>@email.com</td>
+</tr>
+</table>
+<br>
+<br>
+<a href="list.jsp">게시글 리스트 보기</a>
+</body>
+</html>
